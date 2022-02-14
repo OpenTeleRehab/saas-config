@@ -1,0 +1,50 @@
+---
+
+- name: PatientService | Clone git repo patient service
+  git:
+    repo: '{{ git_repo }}/patient-service.git'
+    version: '{{ git_branch }}'
+    dest: /var/tmp/patient-service
+    accept_hostkey: yes
+    force: yes
+  register: patient_service_git_commit_id
+
+- name: PatientService | Copy deployment configuration
+  template:
+    src: 'internal/patient-service/{{ item }}.j2'
+    dest: '/var/tmp/patient-service/{{ item }}'
+    mode: 0755
+  loop:
+    - default.conf
+    - Dockerfile
+    - hi-task-scheduler
+
+- name: PatientService | Copy .env
+  template:
+    src: 'internal/patient-service/env.j2'
+    dest: '/var/tmp/patient-service/.env'
+    mode: 0755
+
+- name: PatientService | Run composer to install dependencies
+  shell: '{{ php_bin }} {{ composer_bin }} install {{ composer_flags }}'
+  args:
+    chdir: '/var/tmp/patient-service'
+
+- name: PatientService | Build docker image
+  shell: 'docker build -t {{ image_name }}/patient-{{ org_name }}-service:latest .'
+  args:
+    chdir: '/var/tmp/patient-service'
+
+- name: PatientService | Tag docker image to hub.web-essentials.co
+  shell: 'docker tag {{ image_name }}/patient-{{ org_name }}-service:latest {{ image_name }}/patient-{{ org_name }}-service:{{ patient_service_git_commit_id.after[:7] }}'
+  args:
+    chdir: '/var/tmp/patient-service'
+
+- name: PatientService | Push docker image to hub.web-essentials.co
+  shell: 'docker push {{ image_name }}/patient-{{ org_name }}-service:{{ item }}'
+  args:
+    chdir: '/var/tmp/patient-service'
+  loop:
+    - '{{ patient_service_git_commit_id.after[:7] }}'
+    - latest
+  when: stage != "live"

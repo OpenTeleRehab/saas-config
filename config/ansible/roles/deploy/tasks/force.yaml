@@ -1,0 +1,116 @@
+---
+
+- name: Git pull helm repo for SaaS config
+  git:
+    repo: git@git.web-essentials.asia:hiv-tra-20/saas-config.git
+    dest: /var/tmp/saas-config
+    force: yes
+
+- name: Deploy admin service
+  shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install --recreate-pods admin-{{ org_name }}-service --set image.service=admin --set image.org_name={{ org_name }} --set image.tag={{ admin_service_git_commit_id.after[:7] }} charts/service --create-namespace --namespace {{ k8s_namespace }}'
+  args:
+    chdir: /var/tmp/saas-config
+
+- name: Admin-Service | Wait until container ready
+  shell: |
+    while [[ $(KUBECONFIG={{ k8s_config }} kubectl -n {{ k8s_namespace }} get po -l app=admin-{{ org_name }}-service -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]] ; do echo "waiting for pod" && sleep 1 ; done
+  args:
+    executable: /bin/bash
+
+- name: Admin-Service | Get running admin service pod name
+  shell: 'KUBECONFIG={{ k8s_config }} kubectl get pods -n {{ k8s_namespace }} | grep admin-{{ org_name }}-service | tail -n1 | cut -d " " -f1'
+  register: admin_pod_name
+
+- name: Admin-Service | Migrate DB, Create org user and import static page
+  shell: 'KUBECONFIG={{ k8s_config }} kubectl exec {{ admin_pod_name.stdout }} -n {{ k8s_namespace }} -- /usr/bin/php artisan {{ item }}'
+  loop:
+    - migrate --force
+    - hi:create-organization-admin-user {{ org_email }} {{ org_name }}
+    - hi:import-static-page
+    - hi:sync-library-data
+    - hi:import-system-limit
+
+- name: Deploy therapist service
+  shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install --recreate-pods therapist-{{ org_name }}-service --set image.service=therapist --set image.org_name={{ org_name }} --set image.tag={{ therapist_service_git_commit_id.after[:7] }} charts/service --create-namespace --namespace {{ k8s_namespace }}'
+  args:
+    chdir: /var/tmp/saas-config
+
+- name: Therapist-Service | Wait until container ready
+  shell: |
+    while [[ $(KUBECONFIG={{ k8s_config }} kubectl -n {{ k8s_namespace }} get po -l app=therapist-{{ org_name }}-service -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]] ; do echo "waiting for pod" && sleep 1 ; done
+  args:
+    executable: /bin/bash
+
+- name: Therapist-Service | Get running therapist service pod name
+  shell: 'KUBECONFIG={{ k8s_config }} kubectl get pods -n {{ k8s_namespace }} | grep therapist-{{ org_name }}-service | tail -n1 | cut -d " " -f1'
+  register: therapist_pod_name
+
+- name: Therapist-Service | Migrate DB
+  shell: 'KUBECONFIG={{ k8s_config }} kubectl exec {{ therapist_pod_name.stdout }} -n {{ k8s_namespace }} -- /usr/bin/php artisan migrate --force'
+
+- name: Deploy patient service
+  shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install --recreate-pods patient-{{ org_name }}-service --set image.service=patient --set image.org_name={{ org_name }} --set image.tag={{ patient_service_git_commit_id.after[:7] }} charts/service --create-namespace --namespace {{ k8s_namespace }}'
+  args:
+    chdir: /var/tmp/saas-config
+
+- name: Patient-Service | Wait until container ready
+  shell: |
+    while [[ $(KUBECONFIG={{ k8s_config }} kubectl -n {{ k8s_namespace }} get po -l app=patient-{{ org_name }}-service -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]] ; do echo "waiting for pod" && sleep 1 ; done
+  args:
+    executable: /bin/bash
+
+- name: Patient-Service | Get running patient service pod name
+  shell: 'KUBECONFIG={{ k8s_config }} kubectl get pods -n {{ k8s_namespace }} | grep patient-{{ org_name }}-service | tail -n1 | cut -d " " -f1'
+  register: patient_pod_name
+
+- name: Patient-Service | Migrate DB, install passport
+  shell: 'KUBECONFIG={{ k8s_config }} kubectl exec {{ patient_pod_name.stdout }} -n {{ k8s_namespace }} -- /usr/bin/php artisan {{ item }}'
+  loop:
+    - migrate --force
+    - passport:install --force
+
+- name: Deploy krakend api
+  shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install --recreate-pods krakend-{{ org_name }}-service --set image.org_name={{ org_name }} --set image.tag={{ krakend_git_commit_id.after[:7] }} charts/krakend --create-namespace --namespace {{ k8s_namespace }}'
+  args:
+    chdir: /var/tmp/saas-config
+
+- name: Deploy rocket chat database
+  shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install chat-{{ org_name }}-db charts/chat-db --create-namespace --namespace {{ k8s_namespace }}'
+  args:
+    chdir: /var/tmp/saas-config
+
+# - name: Wait until container ready
+#   shell: |
+#     while [[ $(KUBECONFIG={{ k8s_config }} kubectl -n {{ k8s_namespace }} get po -l app=chat-{{ org_name }}-db-chat-db -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]while ; do echo "waiting for pod" && sleep 1 ; done
+#   args:
+#     executable: /bin/bash
+
+# - name: Get running chat database pod name
+#   shell: 'KUBECONFIG={{ k8s_config }} kubectl get pods -n {{ k8s_namespace }} | grep chat-{{ org_name }}-db-chat-db | tail -n1 | cut -d " " -f1'
+#   register: chat_db_pod_name
+
+# - name: Copy database into chat database container
+#   shell: 'KUBECONFIG={{ k8s_config }} kubectl -n {{ k8s_namespace }} cp rocketchatdb.tar.gz {{ chat_db_pod_name.stdout }}:/tmp/'
+#   args:
+#     chdir: /var/tmp/saas-config/roles/deploy/templates/rocketchat/rocketchatdb.tar.gz
+
+# - name: Extract database
+#   shell: 'KUBECONFIG={{ k8s_config }} kubectl exec {{ chat_db_pod_name.stdout }} -n {{ k8s_namespace }} -- tar -zxvf /tmp/rocketchatdb.tar.gz -C /tmp/'
+
+# - name: Restore Chat database
+#   shell: 'KUBECONFIG={{ k8s_config }} kubectl exec {{ chat_db_pod_name.stdout }} -n {{ k8s_namespace }} -- mongorestore --authenticationDatabase "admin" -d rocketchat /tmp/dump/rocketchat'
+
+- name: Deploy rocket chat service
+  shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install chat-{{ org_name }} --set ingress.hosts[0].host=chat-{{ org_domain }},ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific charts/chat --create-namespace --namespace {{ k8s_namespace }}'
+  args:
+    chdir: /var/tmp/saas-config
+
+- name: Deploy admin webapp
+  shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install --recreate-pods admin-{{ org_name }}-webapp --set image.service=admin --set image.stage={{ stage }} --set image.org_name={{ org_name }} --set ingress.hosts[0].host=admin-{{ org_domain }},ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific --set image.tag={{ admin_webapp_git_commit_id.after[:7] }} charts/webapp --create-namespace --namespace {{ k8s_namespace }}'
+  args:
+    chdir: /var/tmp/saas-config
+
+- name: Deploy therapist webapp
+  shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install --recreate-pods therapist-{{ org_name }}-webapp --set image.service=therapist --set image.stage={{ stage }} --set image.org_name={{ org_name }} --set ingress.hosts[0].host=therapist-{{ org_domain }},ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific --set image.tag={{ therapist_webapp_git_commit_id.after[:7] }} charts/webapp --create-namespace --namespace {{ k8s_namespace }}'
+  args:
+    chdir: /var/tmp/saas-config

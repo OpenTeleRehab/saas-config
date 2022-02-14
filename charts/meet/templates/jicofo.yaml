@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "meet.fullname" . }}-jicofo
+  labels:
+    app: {{ include "meet.fullname" . }}-jicofo
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "meet.fullname" . }}-jicofo
+  template:
+    metadata:
+      labels:
+        app: {{ include "meet.fullname" . }}-jicofo
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository_jicofo }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: configmap-{{ include "meet.fullname" . }}
+          volumeMounts:
+            - name: 'vol-{{ include "meet.fullname" . }}'
+              subPath: jicofo
+              mountPath: /config
+      volumes:
+        - name: 'vol-{{ include "meet.fullname" . }}'
+          persistentVolumeClaim:
+            claimName: 'pvc-{{ include "meet.fullname" . }}'

@@ -1,0 +1,10 @@
+FROM nginx:1.21.6
+
+# Create app directory
+WORKDIR /usr/share/nginx/html
+
+# Copy nginx vhost config
+COPY default.conf /etc/nginx/conf.d/default.conf
+
+# Compile source
+COPY build /usr/share/nginx/html

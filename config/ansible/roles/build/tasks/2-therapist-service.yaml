@@ -1,0 +1,55 @@
+---
+
+- name: TherapistService | Clone git repo therapist service
+  git:
+    repo: '{{ git_repo }}/therapist-service.git'
+    version: '{{ git_branch }}'
+    dest: /var/tmp/therapist-service
+    accept_hostkey: yes
+    force: yes
+  register: therapist_service_git_commit_id
+
+- name: TherapistService | Copy deployment configuration
+  template:
+    src: 'internal/therapist-service/{{ item }}.j2'
+    dest: '/var/tmp/therapist-service/{{ item }}'
+    mode: 0755
+  loop:
+    - default.conf
+    - Dockerfile
+
+- name: TherapistService | Copy .env
+  template:
+    src: 'internal/therapist-service/env.j2'
+    dest: '/var/tmp/therapist-service/.env'
+    mode: 0755
+
+- name: TherapistService | Copy .env.dusk.local
+  template:
+    src: 'internal/therapist-service/env.dusk.local.j2'
+    dest: '/var/tmp/therapist-service/.env.dusk.local'
+    mode: 0755
+
+- name: TherapistService | Run composer to install dependencies
+  shell: '{{ php_bin }} {{ composer_bin }} install {{ composer_flags }}'
+  args:
+    chdir: '/var/tmp/therapist-service'
+
+- name: TherapistService | Build docker image
+  shell: 'docker build -t {{ image_name }}/therapist-{{ org_name }}-service:latest .'
+  args:
+    chdir: '/var/tmp/therapist-service'
+
+- name: TherapistService | Tag docker image to hub.web-essentials.co
+  shell: 'docker tag {{ image_name }}/therapist-{{ org_name }}-service:latest {{ image_name }}/therapist-{{ org_name }}-service:{{ therapist_service_git_commit_id.after[:7] }}'
+  args:
+    chdir: '/var/tmp/therapist-service'
+
+- name: TherapistService | Push docker image to hub.web-essentials.co
+  shell: 'docker push {{ image_name }}/therapist-{{ org_name }}-service:{{ item }}'
+  args:
+    chdir: '/var/tmp/therapist-service'
+  loop:
+    - '{{ therapist_service_git_commit_id.after[:7] }}'
+    - latest
+  when: stage != "live"

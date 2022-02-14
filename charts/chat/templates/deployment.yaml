@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chat.fullname" . }}
+  labels:
+    app: {{ include "chat.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "chat.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "chat.fullname" . }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          command: ["/bin/sh","-c"]
+          args: ["for i in `seq 1 30`; do node main.js && s=$$? && break || s=$$?; echo \"Tried $$i times. Waiting 5 secs...\"; sleep 5; done; (exit $$s)"]
+          env:
+            {{- range .Values.ingress.hosts }}
+            - name: ROOT_URL
+              value: "https://{{ .host }}"
+            {{- end }}
+            - name: MONGO_URL
+              value: mongodb://{{ include "chat.fullname" . }}-db-chat-db:27017/rocketchat
+            - name: MONGO_OPLOG_URL
+              value: mongodb://{{ include "chat.fullname" . }}-db-chat-db:27017/local
+          volumeMounts:
+            - name: 'vol-{{ include "chat.fullname" . }}'
+              mountPath: /app/uploads
+              subPath: {{ include "chat.fullname" . }}
+      volumes:
+        - name: 'vol-{{ include "chat.fullname" . }}'
+          persistentVolumeClaim:
+            claimName: 'pvc-{{ include "chat.fullname" . }}'

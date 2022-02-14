@@ -1,0 +1,67 @@
+---
+
+org_name:      webessentials
+org_email:     webessentials@openrehab.com
+org_domain:    webessentials.openrehab.com
+
+git_repo:     'git@git.web-essentials.asia:hiv-tra-20'
+git_branch:   'HEAD'
+
+base_image:     'hub.web-essentials.co/webessentials/nginx-php:7.4' # public image: wehostasia/nginx-php:7.4
+image_name:     'hub.web-essentials.co/we/hiv-tra-20'
+k8s_config:     '~/.kube/admin.conf'
+k8s_namespace:  '{{ org_name }}'
+
+app_context:    'Production'
+php_bin:        '/usr/bin/php7.4'
+composer_bin:   '/usr/local/bin/composer'
+composer_flags: '--no-dev --prefer-dist --no-interaction'
+
+my_host: '10.10.10.25'
+
+gadmin_api_url:     'https://demo-admin-rehabilitation.wehost.asia'
+gadmin_service:     'svc-demo-tra-krakend'
+phone_service:      'svc-demo-tra-krakend'
+
+krakend_service:       'krakend-{{ org_name }}-service'
+admin_service:         'admin-{{ org_name }}-service'
+therapist_service:     'therapist-{{ org_name }}-service'
+patient_service:       'patient-{{ org_name }}-service'
+library_service:       'library-{{ org_name }}-service'
+
+smtp_host:              'email-smtp.us-east-1.amazonaws.com'
+smtp_port:              '587'
+smtp_user:              '{{ smtp_user_vault }}'
+smtp_pass:              '{{ smtp_pass_vault }}'
+smtp_encryption:        'tls'
+smtp_mail_from_address: 'noreply@opentelerehab.com'
+
+sms_sid:                    '{{ sms_sid_vault }}'
+sms_token:                  '{{ sms_token_vault }}'
+sms_verify_service_sid:     '{{ sms_verify_service_sid_vault }}'
+sms_verify_exclude_numbers: '85516632704,855886991260,855966138877'
+
+pusher_app_id:      '{{ pusher_app_id_vault }}'
+pusher_app_key:     '{{ pusher_app_key_vault }}'
+pusher_app_secret:  '{{ pusher_app_secret_vault }}'
+
+map_api_key:              '{{ map_api_key_vault }}'
+google_translate_api_key: '{{ google_translate_api_key_vault }}'
+
+jitsi_url: meet.openrehab.com
+rocketchat_service:           'chat-{{ org_name }}'
+rocketchat_admin_pass:        '{{ rocketchat_admin_pass_vault }}'
+rocketchat_admin_user_id:     '{{ rocketchat_admin_user_id_vault }}'
+rocketchat_admin_auth_token:  '{{ rocketchat_admin_auth_token_vault }}'
+
+keycloak_admin_user:                   'admin'
+keycloak_admin_pass:                   '{{ keycloak_admin_pass_vault }}'
+keycloak_domain:                       'https://demo-admin-rehabilitation.wehost.asia'
+keycloak_service:                      'svc-demo-tra-keycloak'
+keycloak_admin_backend_secret:         '{{ keycloak_admin_backend_secret_vault }}'
+keycloak_admin_realm_public_key:       '{{ keycloak_admin_realm_public_key_vault }}'
+keycloak_therapistbackend_secret:      '{{ keycloak_therapistbackend_secret_vault }}'
+keycloak_therapist_realm_public_key:   '{{ keycloak_therapist_realm_public_key_vault }}'
+
+keycloak_admin_backend_secret_org:     '{{ keycloak_admin_backend_secret_org_vault }}'
+keycloak_therapist_backend_secret_org: '{{ keycloak_therapist_backend_secret_org_vault }}'

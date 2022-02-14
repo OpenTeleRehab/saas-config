@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-{{ include "chat-db.fullname" . }}
+  labels:
+    app: pv-{{ include "chat-db.fullname" . }}
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: {{ .Values.nfs_server.host }}
+    path: {{ .Values.nfs_server.path }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-{{ include "chat-db.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      app: pv-{{ include "chat-db.fullname" . }}
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ''
+  resources:
+    requests:
+      storage: 2Gi

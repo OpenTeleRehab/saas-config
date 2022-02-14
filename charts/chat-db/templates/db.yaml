@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chat-db.fullname" . }}
+  labels:
+    app: {{ include "chat-db.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "chat-db.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "chat-db.fullname" . }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          volumeMounts:
+            - name: 'vol-{{ include "chat-db.fullname" . }}'
+              mountPath: /data/db
+              subPath: {{ include "chat-db.fullname" . }}
+          command: ["/bin/sh","-c"]
+          args: ["mongod --bind_ip 0.0.0.0 --smallfiles --oplogSize 512 --replSet rs0 --storageEngine=mmapv1"]
+      volumes:
+        - name: 'vol-{{ include "chat-db.fullname" . }}'
+          persistentVolumeClaim:
+            claimName: 'pvc-{{ include "chat-db.fullname" . }}'

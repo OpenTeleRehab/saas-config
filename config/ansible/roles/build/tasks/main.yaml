@@ -1,0 +1,27 @@
+---
+
+- name: New organization creation
+  uri:
+    url: '{{ keycloak_domain }}/api/admin/update-organization-status?status=pending&email={{ org_email }}'
+    method: GET
+
+- name: Import keycloak realm
+  import_tasks: 0-keycloak-realm.yaml
+
+- name: Build admin service
+  import_tasks: 1-admin-service.yaml
+
+- name: Build therapist service
+  import_tasks: 2-therapist-service.yaml
+
+- name: Build patient service
+  import_tasks: 3-patient-service.yaml
+
+- name: Build krakend service
+  import_tasks: 4-krakend-service.yaml
+
+- name: Build admin webapp
+  import_tasks: 5-admin-webapp.yaml
+
+- name: Build admin therapist
+  import_tasks: 6-therapist-webapp.yaml

@@ -1,0 +1,65 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "meet.fullname" . }}-web
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: http
+      port: 80
+    - name: https
+      port: 443
+  selector:
+    app: {{ include "meet.fullname" . }}-web
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "meet.fullname" . }}-prosody
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: client
+      port: 5222
+    - name: external
+      port: 5347
+    - name: telnet
+      port: 5280
+  selector:
+    app: {{ include "meet.fullname" . }}-prosody
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "meet.fullname" . }}-jicofo
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 80
+  selector:
+    app: {{ include "meet.fullname" . }}-jicofo
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "meet.fullname" . }}-jvb
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: jvbudp
+      port: 10000
+      protocol: UDP
+    - name: jvbtcp
+      port: 4443
+  selector:
+    app: {{ include "meet.fullname" . }}-jvb

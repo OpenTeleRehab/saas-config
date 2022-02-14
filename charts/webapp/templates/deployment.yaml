@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "webapp.fullname" . }}
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "webapp.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "webapp.fullname" . }}
+    spec:
+      imagePullSecrets:
+        - name: "secret-tra"
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}/{{ .Values.image.stage }}/{{ .Values.image.service }}-{{ .Values.image.org_name }}-webapp:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          volumeMounts:
+            - name: tz-config
+              mountPath: /etc/localtime
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: {{ .Values.tz_path }}

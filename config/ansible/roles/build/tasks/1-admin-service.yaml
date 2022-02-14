@@ -1,0 +1,56 @@
+---
+
+- name: AdminService | Clone git repo admin service
+  git:
+    repo: '{{ git_repo }}/admin-service.git'
+    version: '{{ git_branch }}'
+    dest: /var/tmp/admin-service
+    accept_hostkey: yes
+    force: yes
+  register: admin_service_git_commit_id
+
+- name: AdminService | Copy deployment configuration
+  template:
+    src: 'internal/admin-service/{{ item }}.j2'
+    dest: '/var/tmp/admin-service/{{ item }}'
+    mode: 0755
+  loop:
+    - default.conf
+    - Dockerfile
+    - hi-task-scheduler
+
+- name: AdminService | Copy .env
+  template:
+    src: 'internal/admin-service/env.j2'
+    dest: '/var/tmp/admin-service/.env'
+    mode: 0755
+
+- name: AdminService | Copy .env.dusk.local
+  template:
+    src: 'internal/admin-service/env.dusk.local.j2'
+    dest: '/var/tmp/admin-service/.env.dusk.local'
+    mode: 0755
+
+- name: AdminService | Run composer to install dependencies
+  shell: '{{ php_bin }} {{ composer_bin }} install {{ composer_flags }}'
+  args:
+    chdir: '/var/tmp/admin-service'
+
+- name: AdminService | Build docker image
+  shell: 'docker build -t {{ image_name }}/admin-{{ org_name }}-service:latest .'
+  args:
+    chdir: '/var/tmp/admin-service'
+
+- name: AdminService | Tag docker image to hub.web-essentials.co
+  shell: 'docker tag {{ image_name }}/admin-{{ org_name }}-service:latest {{ image_name }}/admin-{{ org_name }}-service:{{ admin_service_git_commit_id.after[:7] }}'
+  args:
+    chdir: '/var/tmp/admin-service'
+
+- name: AdminService | Push docker image to hub.web-essentials.co
+  shell: 'docker push {{ image_name }}/admin-{{ org_name }}-service:{{ item }}'
+  args:
+    chdir: '/var/tmp/admin-service'
+  loop:
+    - '{{ admin_service_git_commit_id.after[:7] }}'
+    - latest
+  when: stage != "live"

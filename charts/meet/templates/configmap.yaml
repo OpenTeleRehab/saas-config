@@ -1,0 +1,72 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-{{ include "meet.fullname" . }}
+data: |
+  # shellcheck disable=SC2034
+
+  # Security
+  #
+  # Set these to strong passwords to avoid intruders from impersonating a service account
+  # The service(s) won't start unless these are specified
+  # Running ./gen-passwords.sh will update .env with strong passwords
+  # You may skip the Jigasi and Jibri passwords if you are not using those
+  # DO NOT reuse passwords
+  #
+
+  JICOFO_AUTH_PASSWORD=79ea54bdd68a65aabdaa1bea416061fc
+  JVB_AUTH_PASSWORD=6df400ee2a3f488039377d5b733b4cda
+  JIGASI_XMPP_PASSWORD=e2d2c266dec8d7ceef4c54749ec3aca7
+  JIBRI_RECORDER_PASSWORD=4d48194b708bda6ff6ac1b88864495bd
+  JIBRI_XMPP_PASSWORD=36e1793024331dbe1deca2ee23223371
+
+  #
+  # Basic configuration options
+  #
+
+  HTTP_PORT=8000
+  HTTPS_PORT=8443
+  TZ=Asia/Phnom_Penh
+  {{- range .Values.ingress.hosts }}
+  PUBLIC_URL=https://{{ .host }}
+  {{- end }}
+  ETHERPAD_TITLE=Video Chat
+  ETHERPAD_DEFAULT_PAD_TEXT="Welcome to Web Chat!\n\n"
+  ETHERPAD_SKIN_NAME=colibris
+  ETHERPAD_SKIN_VARIANTS="super-light-toolbar super-light-editor light-background full-width-editor"
+
+  XMPP_DOMAIN=meet.jitsi
+  XMPP_SERVER={{ include "meet.fullname" . }}-prosody
+  XMPP_BOSH_URL_BASE=http://{{ include "meet.fullname" . }}-prosody:5280
+  XMPP_AUTH_DOMAIN=auth.meet.jitsi
+  XMPP_MUC_DOMAIN=muc.meet.jitsi
+  XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
+  XMPP_GUEST_DOMAIN=guest.meet.jitsi
+  XMPP_MODULES=
+  XMPP_MUC_MODULES=
+  XMPP_INTERNAL_MUC_MODULES=
+
+  JVB_BREWERY_MUC=jvbbrewery
+  JVB_AUTH_USER=jvb
+  JVB_STUN_SERVERS=meet-jit-si-turnrelay.jitsi.net:443
+  JVB_PORT=10000
+  JVB_TCP_HARVESTER_DISABLED=true
+  JVB_TCP_PORT=4443
+  JVB_TCP_MAPPED_PORT=4443
+  JICOFO_AUTH_USER=focus
+
+  JIGASI_XMPP_USER=jigasi
+  JIGASI_BREWERY_MUC=jigasibrewery
+  JIGASI_PORT_MIN=20000
+  JIGASI_PORT_MAX=20050
+
+  XMPP_RECORDER_DOMAIN=recorder.meet.jitsi
+  JIBRI_RECORDER_USER=recorder
+  JIBRI_RECORDING_DIR=/config/recordings
+  JIBRI_XMPP_USER=jibri
+  JIBRI_BREWERY_MUC=jibribrewery
+  JIBRI_PENDING_TIMEOUT=90
+  JIBRI_STRIP_DOMAIN_JID=muc
+  JIBRI_LOGS_DIR=/config/logs
+  RESTART_POLICY=unless-stopped

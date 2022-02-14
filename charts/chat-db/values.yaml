@@ -1,0 +1,37 @@
+# Default values for chat-db.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+tz_path: "/usr/share/zoneinfo/Asia/Phnom_Penh"
+
+nfs_server:
+  host: 10.10.10.26
+  path: /volume1/export/demo/hiv-tra-20
+
+image:
+  repository: mongo
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "4.0"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 27017

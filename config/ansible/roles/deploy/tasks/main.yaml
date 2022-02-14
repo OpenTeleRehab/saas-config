@@ -1,0 +1,55 @@
+---
+
+- name: Force recreate services
+  import_tasks: force.yaml
+
+# - name: Git pull helm repo for SaaS config
+#   git:
+#     repo: git@git.web-essentials.asia:hiv-tra-20/saas-config.git
+#     dest: /var/tmp/saas-config
+#     force: yes
+
+# - name: Deploy admin service
+#   shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install admin-{{ org_name }}-service --set image.service=admin --set image.org_name={{ org_name }} --set image.tag={{ admin_service_git_commit_id.after[:7] }} charts/service --create-namespace --namespace {{ k8s_namespace }}'
+#   args:
+#     chdir: /var/tmp/saas-config
+
+# - name: Deploy therapist service
+#   shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install therapist-{{ org_name }}-service --set image.service=therapist --set image.org_name={{ org_name }} --set image.tag={{ therapist_service_git_commit_id.after[:7] }} charts/service --create-namespace --namespace {{ k8s_namespace }}'
+#   args:
+#     chdir: /var/tmp/saas-config
+
+# - name: Deploy patient service
+#   shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install patient-{{ org_name }}-service --set image.service=patient --set image.org_name={{ org_name }} --set image.tag={{ patient_service_git_commit_id.after[:7] }} charts/service --create-namespace --namespace {{ k8s_namespace }}'
+#   args:
+#     chdir: /var/tmp/saas-config
+
+# - name: Deploy krakend api
+#   shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install krakend-{{ org_name }}-service --set image.org_name={{ org_name }} --set image.tag={{ krakend_git_commit_id.after[:7] }} charts/krakend --create-namespace --namespace {{ k8s_namespace }}'
+#   args:
+#     chdir: /var/tmp/saas-config
+
+# - name: Deploy rocket chat database
+#   shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install chat-{{ org_name }}-db charts/chat-db --create-namespace --namespace {{ k8s_namespace }}'
+#   args:
+#     chdir: /var/tmp/saas-config
+
+# - name: Deploy rocket chat service
+#   shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install chat-{{ org_name }} --set ingress.hosts[0].host=chat-{{ org_domain }},ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific charts/chat --create-namespace --namespace {{ k8s_namespace }}'
+#   args:
+#     chdir: /var/tmp/saas-config
+
+# - name: Deploy admin webapp
+#   shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install admin-{{ org_name }}-webapp --set image.service=admin --set image.stage={{ stage }} --set image.org_name={{ org_name }} --set ingress.hosts[0].host=admin-{{ org_domain }},ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific --set image.tag={{ admin_webapp_git_commit_id.after[:7] }} charts/webapp --create-namespace --namespace {{ k8s_namespace }}'
+#   args:
+#     chdir: /var/tmp/saas-config
+
+# - name: Deploy therapist webapp
+#   shell: 'KUBECONFIG={{ k8s_config }} helm upgrade --install therapist-{{ org_name }}-wepapp --set image.service=therapist --set image.stage={{ stage }} --set image.org_name={{ org_name }} --set ingress.hosts[0].host=therapist-{{ org_domain }},ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific --set image.tag={{ therapist_webapp_git_commit_id.after[:7] }} charts/webapp --create-namespace --namespace {{ k8s_namespace }}'
+#   args:
+#     chdir: /var/tmp/saas-config
+
+- name: Organization created successfully
+  uri:
+    url: '{{ keycloak_domain }}/api/admin/update-organization-status?status=success&email={{ org_email }}'
+    method: GET

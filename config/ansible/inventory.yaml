@@ -1,0 +1,26 @@
+---
+
+all:
+  children:
+    build:
+      hosts:
+        localhost:
+          ansible_connection: local
+
+    latest:
+      hosts:
+        latest-tra:
+          ansible_connection: local
+
+    demo:
+      hosts:
+        demo-tra:
+          ansible_connection: local
+
+    live:
+      hosts:
+        live-tra:
+          ansible_host: 13.212.68.112
+          ansible_user: ubuntu
+          ansible_ssh_private_key_file: ~/.ssh/hiv.keypair
+

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "service.fullname" . }}
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "service.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "service.fullname" . }}
+    spec:
+      imagePullSecrets:
+        - name: "secret-tra"
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}/{{ .Values.image.service }}-{{ .Values.image.org_name }}-service:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          volumeMounts:
+            - name: tz-config
+              mountPath: /etc/localtime
+            - name: 'vol-{{ include "service.fullname" . }}'
+              mountPath: /var/www/storage
+              subPath: {{ include "service.fullname" . }}
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: {{ .Values.tz_path }}
+        - name: 'vol-{{ include "service.fullname" . }}'
+          persistentVolumeClaim:
+            claimName: pvc-{{ include "service.fullname" . }}

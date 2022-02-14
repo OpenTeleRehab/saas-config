@@ -1,0 +1,82 @@
+---
+
+- name: Copy keycloak realm
+  template:
+    src: 'internal/keycloak-service/{{ item }}.j2'
+    dest: '/var/tmp/{{ item }}'
+  loop:
+    - realm-admin.json
+    - realm-therapist.json
+
+- name: Create Token for service Keycloak
+  uri:
+    url: '{{ keycloak_domain }}/auth/realms/master/protocol/openid-connect/token'
+    method: POST
+    body_format: form-urlencoded
+    body:
+      username: 'admin'
+      password: '{{ keycloak_admin_pass }}'
+      grant_type: 'password'
+      client_id: 'admin-cli'
+  register: keycloak_token
+
+- name: Get if realm already exist
+  uri:
+    url: "{{ keycloak_domain }}/auth/realms/{{ org_name }}-admin"
+    method: GET
+    headers:
+      Content-type: "application/json"
+      Accept: "application/json"
+      Authorization: "Bearer {{ keycloak_token.json.access_token }}"
+  register: get_if_realm_exist
+  ignore_errors: true
+
+- name: Create Realm for service Keycloak
+  uri:
+    url: "{{ keycloak_domain }}/auth/admin/realms"
+    method: POST
+    src: "/var/tmp/{{ item }}"
+    remote_src: "no"
+    status_code:
+      - 201
+    headers:
+      Content-type: "application/json"
+      Accept: "application/json"
+      Authorization: "Bearer {{ keycloak_token.json.access_token }}"
+  register: keycloak_realm_create
+  loop:
+    - realm-admin.json
+    - realm-therapist.json
+  when: get_if_realm_exist.status == 404
+
+- name: Create Token for service Keycloak again
+  uri:
+    url: '{{ keycloak_domain }}/auth/realms/master/protocol/openid-connect/token'
+    method: POST
+    body_format: form-urlencoded
+    body:
+      username: 'admin'
+      password: '{{ keycloak_admin_pass }}'
+      grant_type: 'password'
+      client_id: 'admin-cli'
+  register: keycloak_token
+
+- name: Get keycloak rsa public key Admin
+  uri:
+    url: "{{ keycloak_domain }}/auth/admin/realms/{{ org_name }}-admin/keys"
+    method: GET
+    headers:
+      Content-type: "application/json"
+      Accept: "application/json"
+      Authorization: "Bearer {{ keycloak_token.json.access_token }}"
+  register: keycloak_admin_public_key_org
+
+- name: Get keycloak rsa public key Therapist
+  uri:
+    url: "{{ keycloak_domain }}/auth/admin/realms/{{ org_name }}-therapist/keys"
+    method: GET
+    headers:
+      Content-type: "application/json"
+      Accept: "application/json"
+      Authorization: "Bearer {{ keycloak_token.json.access_token }}"
+  register: keycloak_therapist_public_key_org

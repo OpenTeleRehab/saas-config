@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "meet.fullname" . }}-prosody
+  labels:
+    app: {{ include "meet.fullname" . }}-prosody
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "meet.fullname" . }}-prosody
+  template:
+    metadata:
+      labels:
+        app: {{ include "meet.fullname" . }}-prosody
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository_prosody }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: client
+              containerPort: 5222
+            - name: external
+              containerPort: 5347
+            - name: telnet
+              containerPort: 5280
+          envFrom:
+            - configMapRef:
+                name: configmap-{{ include "meet.fullname" . }}
+          volumeMounts:
+            - name: 'vol-{{ include "meet.fullname" . }}'
+              subPath: prosody/config
+              mountPath: /config
+            - name: 'vol-{{ include "meet.fullname" . }}'
+              subPath: prosody/prosody-plugins-custom
+              mountPath: /prosody-plugins-custom
+      volumes:
+        - name: 'vol-{{ include "meet.fullname" . }}'
+          persistentVolumeClaim:
+            claimName: 'pvc-{{ include "meet.fullname" . }}'

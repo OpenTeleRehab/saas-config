@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chat-db.fullname" . }}-init
+  labels:
+    app: {{ include "chat-db.fullname" . }}-init
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "chat-db.fullname" . }}-init
+  template:
+    metadata:
+      labels:
+        app: {{ include "chat-db.fullname" . }}-init
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          command: ["/bin/sh","-c"]
+          args: ["for i in `seq 1 30`; do
+                   mongo {{ include "chat-db.fullname" . }}/rocketchat --eval \"
+                     rs.initiate({
+                       _id: 'rs0',
+                       members: [ { _id: 0, host: '127.0.0.1:27017' } ]})\" &&
+                   s=$$? && break || s=$$?;
+                   echo \"Tried $$i times. Waiting 5 secs...\";
+                   sleep 5;
+                 done; (exit $$s)"]

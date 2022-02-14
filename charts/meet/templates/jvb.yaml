@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "meet.fullname" . }}-jvb
+  labels:
+    app: {{ include "meet.fullname" . }}-jvb
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "meet.fullname" . }}-jvb
+  template:
+    metadata:
+      labels:
+        app: {{ include "meet.fullname" . }}-jvb
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository_jvb }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: jvbudp
+              containerPort: 10000
+              protocol: UDP
+            - name: jvbtcp
+              containerPort: 4443
+          envFrom:
+            - configMapRef:
+                name: configmap-{{ include "meet.fullname" . }}
+          volumeMounts:
+            - name: 'vol-{{ include "meet.fullname" . }}'
+              subPath: jvb
+              mountPath: /config
+      volumes:
+        - name: 'vol-{{ include "meet.fullname" . }}'
+          persistentVolumeClaim:
+            claimName: 'pvc-{{ include "meet.fullname" . }}'

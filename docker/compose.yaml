@@ -1,0 +1,7 @@
+---
+
+version: '3'
+services:
+  admin-service:
+    container_name: admin-${org_name}-service
+    image: nginx:latest
