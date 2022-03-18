@@ -4,6 +4,8 @@ org_name:      webessentials
 org_email:     webessentials@openrehab.com
 org_domain:    webessentials.openrehab.com
 
+ansible_user: ubuntu
+
 git_repo:     'git@git.web-essentials.asia:hiv-tra-20'
 git_branch:   'HEAD'
 
