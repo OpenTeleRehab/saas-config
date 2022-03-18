@@ -15,6 +15,13 @@
     - projects/{{ org_name }}/config/therapistservice/storage
     - projects/{{ org_name }}/config/libraryservice/storage
 
+- name: Sync storage
+  shell: 'rsync -avz {{ item.src }} {{ item.dest }}'
+  loop:
+    - { src: '/var/tmp/admin-service/storage/', dest: '/home/{{ ansible_user }}/projects/{{ org_name }}/config/adminservice/storage/' }
+    - { src: '/var/tmp/therapist-service/storage/', dest: '/home/{{ ansible_user }}/projects/{{ org_name }}/config/therapistservice/storage/' }
+    - { src: '/var/tmp/patient-service/storage/', dest: '/home/{{ ssh_user }}/projects/{{ org_name }}/config/patientservice/storage/' }
+
 - name: Create organization network
   docker_network:
     name: '{{ org_name }}-network'

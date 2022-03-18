@@ -128,9 +128,11 @@ services:
       - traefik-frontend
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.admin_webapp.rule=Host(`admin-{{ org_domain }}`)'
-      - 'traefik.http.routers.admin_webapp.service=admin_webapp'
-      - 'traefik.http.services.admin_webapp.loadbalancer.server.port=80'
+      - 'traefik.http.routers.admin-{{ org_name }}-webapp.tls=true'
+      - 'traefik.http.routers.admin-{{ org_name }}-webapp.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.admin-{{ org_name }}-webapp.rule=Host(`admin-{{ org_domain }}`)'
+      - 'traefik.http.routers.admin-{{ org_name }}-webapp.service=admin-{{ org_name }}-webapp'
+      - 'traefik.http.services.admin-{{ org_name }}-webapp.loadbalancer.server.port=80'
     depends_on:
       - {{ krakend_service }}
     extra_hosts:
@@ -145,9 +147,11 @@ services:
       - traefik-frontend
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.therapist_webapp.rule=Host(`therapist-{{ org_domain }}`)'
-      - 'traefik.http.routers.therapist_webapp.service=therapist_webapp'
-      - 'traefik.http.services.therapist_webapp.loadbalancer.server.port=80'
+      - 'traefik.http.routers.therapist-{{ org_name }}-webapp.tls=true'
+      - 'traefik.http.routers.therapist-{{ org_name }}-webapp.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.therapist-{{ org_name }}-webapp.rule=Host(`therapist-{{ org_domain }}`)'
+      - 'traefik.http.routers.therapist-{{ org_name }}-webapp.service=therapist-{{ org_name }}-webapp'
+      - 'traefik.http.services.therapist-{{ org_name }}-webapp.loadbalancer.server.port=80'
     depends_on:
       - {{ krakend_service }}
     extra_hosts:
