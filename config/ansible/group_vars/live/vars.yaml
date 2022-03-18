@@ -8,7 +8,11 @@ my_host: 'production-db.cwgm5sdsswey.ap-southeast-1.rds.amazonaws.com'
 
 gadmin_api_url:     'https://admin.opentelerehab.com'
 gadmin_service:     'krakend'
-phone_service:         'phone-{{ org_name }}-service'
+phone_service:      'phone-service'
+
+keycloak_service:   'keycloak'
+keycloak_host:      '192.168.10.26'
+
 
 smtp_host:              'email-smtp.us-east-1.amazonaws.com'
 smtp_port:              '587'

@@ -131,6 +131,8 @@ services:
       - 'traefik.http.services.admin_webapp.loadbalancer.server.port=80'
     depends_on:
       - {{ krakend_service }}
+    extra_hosts:
+    - '{{ keycloak_service }}:{{ keycloak_host }}'
 
   therapist-{{ org_name }}-webapp:
     container_name: therapist-{{ org_name }}-webapp
@@ -146,4 +148,6 @@ services:
       - 'traefik.http.services.therapist_webapp.loadbalancer.server.port=80'
     depends_on:
       - {{ krakend_service }}
+    extra_hosts:
+    - '{{ keycloak_service }}:{{ keycloak_host }}'
 
