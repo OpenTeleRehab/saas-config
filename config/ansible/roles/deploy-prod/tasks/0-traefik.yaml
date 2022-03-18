@@ -1,0 +1,25 @@
+---
+
+- name: Create Traefik directory
+  file:
+    path: '{{ item }}'
+    state: directory
+    recurse: yes
+    mode: 0755
+  loop:
+    - tools/traefik/config
+    - tools/traefik/config/letsencrypt-certificates
+
+- name: Create traefik docker service
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    mode: 0755
+  loop:
+    - { src: 'traefik/traefik-compose.yaml.j2', dest: 'tools/traefik/compose.yaml' }
+    - { src: 'traefik/traefik-config.yaml.j2', dest: 'tools/traefik/config/traefik-config.yaml' }
+
+- name: Start traefik service
+  shell: docker-compose up -d
+  args:
+    chdir: 'tools/traefik'

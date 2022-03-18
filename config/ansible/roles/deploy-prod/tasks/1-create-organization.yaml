@@ -1,0 +1,31 @@
+---
+
+- name: Production | Create projects directory global server
+  file:
+    path: '{{ item }}'
+    state: directory
+    mode: 0755
+  loop:
+    - projects/{{ org_name }}/config
+    - projects/{{ org_name }}/config/admin-webapp
+    - projects/{{ org_name }}/config/adminservice/storage
+    - projects/{{ org_name }}/config/patientservice/storage
+    - projects/{{ org_name }}/config/rocketchat
+    - projects/{{ org_name }}/config/therapist-webapp
+    - projects/{{ org_name }}/config/therapistservice/storage
+    - projects/{{ org_name }}/config/libraryservice/storage
+
+- name: Create docker compose file
+  template:
+    src: 'compose.yaml.j2'
+    dest: 'projects/{{ org_name }}/compose.yaml'
+    mode: 0755
+
+- name: Docker compose start all container
+  shell: docker-compose up -d
+  args:
+    chdir: 'projects/{{ org_name }}'
+
+- name: Wait for containers ready
+  pause:
+    seconds: 30

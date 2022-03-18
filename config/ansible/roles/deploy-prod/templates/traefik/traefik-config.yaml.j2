@@ -31,13 +31,19 @@ providers:
 entryPoints:
   web:
     address: :80
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
   websecure:
     address: :443
 
-
-## DYNAMIC CONFIG
-
-# tls:
-#   certificates:
-#     - certFile: /certs/fullchain.pem
-#       keyFile: /certs/privkey.pem
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: devops@web-essentials.co
+      storage: /certificates/acme.json
+      httpChallenge:
+        entryPoint: web
