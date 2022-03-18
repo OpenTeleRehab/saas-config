@@ -16,20 +16,18 @@
     - projects/{{ org_name }}/config/libraryservice/storage
 
 - name: Create organization network
-  shell: 'docker network create {{ org_name }}-network'
-  args:
-    chdir: 'projects/{{ org_name }}'
+  docker_network:
+    name: '{{ org_name }}-network'
 
 - name: Create docker compose file
   template:
     src: 'compose.yaml.j2'
-    dest: 'projects/{{ org_name }}/compose.yaml'
+    dest: '/home/{{ ansible_user }}/projects/{{ org_name }}/compose.yaml'
     mode: 0755
 
 - name: Docker compose start all container
-  shell: docker-compose up -d
-  args:
-    chdir: 'projects/{{ org_name }}'
+  docker_compose:
+    project_src: '/home/{{ ansible_user }}/projects/{{ org_name }}'
 
 - name: Wait for containers ready
   pause:

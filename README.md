@@ -4,6 +4,10 @@
 3. Deploy services (admin, therapist, patient, krakend)
 4. Deploy webapp (admin-webapp, therapist-webapp)
 
+## Ansible
+   - python3
+   - python3-pip
+   - pip install docker-compose
 
 # Configuration Rocket.Chat
 New version rocket not allow create admin user you need create difference name for administrator account

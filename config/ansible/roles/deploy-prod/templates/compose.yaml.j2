@@ -39,19 +39,6 @@ services:
     depends_on:
       - {{ admin_service }}
 
-  {{ phone_service }}:
-    container_name: {{ phone_service }}
-    image: {{ image_name }}/phone-{{ org_name }}-service:{{ phone_service_git_commit_id.after[:7] }}
-    restart: unless-stopped
-    environment:
-      LOCAL_USER_ID: 1000
-    networks:
-      - {{ org_name }}-network
-    volumes:
-      - ./config/phoneservice/storage:/var/www/storage
-    depends_on:
-      - {{ admin_service }}
-
   {{ patient_service }}:
     container_name: {{ patient_service }}
     image: {{ image_name }}/patient-{{ org_name }}-service:{{ patient_service_git_commit_id.after[:7] }}
@@ -143,7 +130,7 @@ services:
       - 'traefik.http.routers.admin_webapp.service=admin_webapp'
       - 'traefik.http.services.admin_webapp.loadbalancer.server.port=80'
     depends_on:
-      - krakend
+      - {{ krakend_service }}
 
   therapist-{{ org_name }}-webapp:
     container_name: therapist-{{ org_name }}-webapp
@@ -158,5 +145,5 @@ services:
       - 'traefik.http.routers.therapist_webapp.service=therapist_webapp'
       - 'traefik.http.services.therapist_webapp.loadbalancer.server.port=80'
     depends_on:
-      - krakend
+      - {{ krakend_service }}
 
