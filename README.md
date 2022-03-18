@@ -28,19 +28,19 @@ New version rocket not allow create admin user you need create difference name f
                     -e org_domain=webessentials.wehost.asia \
                     -e keycloak_domain=https://demo-admin-rehabilitation.wehost.asia \
                     -e k8s_namespace=hiv \
+                    -e k8s_config=~/.kube/config \
                     config/ansible/playbook.yaml -vv
 
 # Deploy to Hi AWS server with docker
 
     ansible-playbook -l live -t build \
                     -e stage=live \
-                    -e base_image=wehostasia/nginx-php:7.4 \
                     -e git_branch=master \
+                    -e base_image=wehostasia/nginx-php:7.4 \
                     -e org_name=webessentials \
                     -e org_email=devops@opentelerehab.com \
                     -e org_domain=webessentials.opentelerehab.com \
                     -e keycloak_domain=https://admin.opentelerehab.com \
-                    -e k8s_namespace=hiv \
                     config/ansible/playbook.yaml -vv
 
 

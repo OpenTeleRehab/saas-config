@@ -1,0 +1,18 @@
+---
+
+org_name:      webessentials
+org_email:     webessentials@openrehab.com
+org_domain:    webessentials.openrehab.com
+
+my_host: 'production-db.cwgm5sdsswey.ap-southeast-1.rds.amazonaws.com'
+
+gadmin_api_url:     'https://admin.opentelerehab.com'
+gadmin_service:     'krakend'
+phone_service:         'phone-{{ org_name }}-service'
+
+smtp_host:              'email-smtp.us-east-1.amazonaws.com'
+smtp_port:              '587'
+smtp_user:              '{{ smtp_user_vault }}'
+smtp_pass:              '{{ smtp_pass_vault }}'
+smtp_encryption:        'tls'
+smtp_mail_from_address: 'noreply@opentelerehab.com'
