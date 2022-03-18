@@ -4,17 +4,17 @@
 - name: Run artisan migration
   shell: 'docker-compose exec admin-{{ org_name }}-service /usr/bin/php artisan migrate --force'
   args:
-    chdir: 'projects/{{ org_name }}'
+    chdir: '/home/{{ ansible_user }}/projects/{{ org_name }}'
 
 - name: Run artisan storage link
   shell: 'docker-compose exec admin-{{ org_name }}-service /usr/bin/php artisan storage:link'
   args:
-    chdir: 'projects/{{ org_name }}'
+    chdir: '/home/{{ ansible_user }}/projects/{{ org_name }}'
 
 - name: Run artisan clear cache
   shell: 'docker-compose exec admin-{{ org_name }}-service /usr/bin/php artisan {{ item }}'
   args:
-    chdir: 'projects/{{ org_name }}'
+    chdir: '/home/{{ ansible_user }}/projects/{{ org_name }}'
   loop:
     - cache:clear
     - config:clear
@@ -24,23 +24,23 @@
 - name: Run artisan import
   shell: 'docker-compose exec admin-{{ org_name }}-service /usr/bin/php artisan hi:import-default-translation'
   args:
-    chdir: 'projects/{{ org_name }}'
+    chdir: '/home/{{ ansible_user }}/projects/{{ org_name }}'
 
 # Run artisan therapist service
 - name: Run artisan migration
   shell: 'docker-compose exec therapist-{{ org_name }}-service /usr/bin/php artisan migrate --force'
   args:
-    chdir: 'projects/{{ org_name }}'
+    chdir: '/home/{{ ansible_user }}/projects/{{ org_name }}'
 
 - name: Run artisan storage link
   shell: 'docker-compose exec therapist-{{ org_name }}-service /usr/bin/php artisan storage:link'
   args:
-    chdir: 'projects/{{ org_name }}'
+    chdir: '/home/{{ ansible_user }}/projects/{{ org_name }}'
 
 - name: Run artisan clear cache
   shell: 'docker-compose exec therapist-{{ org_name }}-service /usr/bin/php artisan {{ item }}'
   args:
-    chdir: 'projects/{{ org_name }}'
+    chdir: '/home/{{ ansible_user }}/projects/{{ org_name }}'
   loop:
     - cache:clear
     - config:clear
@@ -51,17 +51,17 @@
 - name: Run artisan migration
   shell: 'docker-compose exec patient-{{ org_name }}-service /usr/bin/php artisan migrate --force'
   args:
-    chdir: 'projects/{{ org_name }}'
+    chdir: '/home/{{ ansible_user }}/projects/{{ org_name }}'
 
 - name: Run artisan storage link
   shell: 'docker-compose exec patient-{{ org_name }}-service /usr/bin/php artisan storage:link'
   args:
-    chdir: 'projects/{{ org_name }}'
+    chdir: '/home/{{ ansible_user }}/projects/{{ org_name }}'
 
 - name: Run artisan clear cache
   shell: 'docker-compose exec patient-{{ org_name }}-service /usr/bin/php artisan {{ item }}'
   args:
-    chdir: 'projects/{{ org_name }}'
+    chdir: '/home/{{ ansible_user }}/projects/{{ org_name }}'
   loop:
     - cache:clear
     - config:clear

@@ -2,7 +2,7 @@
 
 - name: Create Traefik directory
   file:
-    path: '{{ item }}'
+    path: '/home/{{ ansible_user }}/{{ item }}'
     state: directory
     recurse: yes
     mode: 0755

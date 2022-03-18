@@ -2,7 +2,7 @@
 
 - name: Production | Create projects directory global server
   file:
-    path: '{{ item }}'
+    path: '/home/{{ ansible_user }}/{{ item }}'
     state: directory
     mode: 0755
   loop:
