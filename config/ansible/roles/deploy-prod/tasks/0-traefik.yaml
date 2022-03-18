@@ -10,6 +10,11 @@
     - tools/traefik/config
     - tools/traefik/config/letsencrypt-certificates
 
+- name: Create traefik network
+  shell: 'docker network create traefik-frontend'
+  args:
+    chdir: 'tools/traefik'
+
 - name: Create traefik docker service
   template:
     src: '{{ item.src }}'

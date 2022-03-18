@@ -1,8 +1,8 @@
 ---
 
 # Traefik - Proxy
-- name: Deploy traefik service
-  import_tasks: 0-traefik.yaml
+#- name: Deploy traefik service
+#  import_tasks: 0-traefik.yaml
 
 # Organization Service
 - name: Create organization service

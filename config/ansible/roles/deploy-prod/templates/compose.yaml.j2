@@ -3,7 +3,9 @@
 version: '3'
 networks:
   {{ org_name }}-network:
-  traefik-net:
+    external: true
+  traefik-frontend:
+    external: true
 
 volumes:
   rocketchat_db_data:
@@ -134,7 +136,7 @@ services:
     restart: unless-stopped
     networks:
       - {{ org_name }}-network
-      - traefik-net
+      - traefik-frontend
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.admin_webapp.rule=Host(`admin-{{ org_domain }}`)'
@@ -149,7 +151,7 @@ services:
     restart: unless-stopped
     networks:
       - {{ org_name }}-network
-      - traefik-net
+      - traefik-frontend
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.therapist_webapp.rule=Host(`therapist-{{ org_domain }}`)'

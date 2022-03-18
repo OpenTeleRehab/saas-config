@@ -15,6 +15,11 @@
     - projects/{{ org_name }}/config/therapistservice/storage
     - projects/{{ org_name }}/config/libraryservice/storage
 
+- name: Create organization network
+  shell: 'docker network create {{ org_name }}-network'
+  args:
+    chdir: 'projects/{{ org_name }}'
+
 - name: Create docker compose file
   template:
     src: 'compose.yaml.j2'
