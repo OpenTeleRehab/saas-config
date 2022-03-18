@@ -58,6 +58,8 @@ services:
     restart: unless-stopped
     networks:
       - {{ org_name }}-network
+    extra_hosts:
+    - '{{ phone_service }}:{{ hi_gloabl_host }}'
 
   {{ rocketchat_service }}:
     container_name: {{ rocketchat_service }}
@@ -132,7 +134,7 @@ services:
     depends_on:
       - {{ krakend_service }}
     extra_hosts:
-    - '{{ keycloak_service }}:{{ keycloak_host }}'
+    - '{{ keycloak_service }}:{{ hi_gloabl_host }}'
 
   therapist-{{ org_name }}-webapp:
     container_name: therapist-{{ org_name }}-webapp
@@ -149,5 +151,5 @@ services:
     depends_on:
       - {{ krakend_service }}
     extra_hosts:
-    - '{{ keycloak_service }}:{{ keycloak_host }}'
+    - '{{ keycloak_service }}:{{ hi_gloabl_host }}'
 
