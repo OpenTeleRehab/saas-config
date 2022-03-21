@@ -144,6 +144,9 @@ services:
       - 'traefik.http.routers.admin-{{ org_name }}-webapp.rule=Host(`admin-{{ org_domain }}`)'
       - 'traefik.http.routers.admin-{{ org_name }}-webapp.service=admin-{{ org_name }}-webapp'
       - 'traefik.http.services.admin-{{ org_name }}-webapp.loadbalancer.server.port=80'
+      - "traefik.http.middlewares.serviceheaders.headers.accesscontrolalloworiginlist=*"
+      - "traefik.http.routers.admin-{{ org_name }}-webapp.middlewares=serviceheaders"
+
     depends_on:
       - {{ krakend_service }}
     extra_hosts:
@@ -164,6 +167,9 @@ services:
       - 'traefik.http.routers.therapist-{{ org_name }}-webapp.rule=Host(`therapist-{{ org_domain }}`)'
       - 'traefik.http.routers.therapist-{{ org_name }}-webapp.service=therapist-{{ org_name }}-webapp'
       - 'traefik.http.services.therapist-{{ org_name }}-webapp.loadbalancer.server.port=80'
+      - "traefik.http.middlewares.serviceheaders.headers.accesscontrolalloworiginlist=*"
+      - "traefik.http.routers.therapist-{{ org_name }}-webapp.middlewares=serviceheaders"
+
     depends_on:
       - {{ krakend_service }}
     extra_hosts:
