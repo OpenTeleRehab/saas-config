@@ -7,15 +7,19 @@
 
 - name: Import keycloak realm
   import_tasks: 0-keycloak-realm.yaml
+  tags: keycloak_service
 
 - name: Build admin service
   import_tasks: 1-admin-service.yaml
+  tags: admin_service
 
 - name: Build therapist service
   import_tasks: 2-therapist-service.yaml
+  tags: therapist_service
 
 - name: Build patient service
   import_tasks: 3-patient-service.yaml
+  tags: patient_service
 
 - name: Build krakend service
   import_tasks: 4-krakend-service.yaml

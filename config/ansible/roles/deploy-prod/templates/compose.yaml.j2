@@ -96,11 +96,11 @@ services:
       - {{ rocketchat_service }}-db
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.admin-{{ org_name }}-webapp.tls=true'
-      - 'traefik.http.routers.admin-{{ org_name }}-webapp.tls.certresolver=letsencrypt'
-      - 'traefik.http.routers.rocketchat.rule=Host(`chat-{{ org_domain }}`)'
-      - 'traefik.http.routers.rocketchat.service=rocketchat'
-      - 'traefik.http.services.rocketchat.loadbalancer.server.port=3000'
+      - 'traefik.http.routers.{{ rocketchat_service }}.tls=true'
+      - 'traefik.http.routers.{{ rocketchat_service }}.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.{{ rocketchat_service }}.rule=Host(`chat-{{ org_domain }}`)'
+      - 'traefik.http.routers.{{ rocketchat_service }}.service={{ rocketchat_service }}'
+      - 'traefik.http.services.{{ rocketchat_service }}.loadbalancer.server.port=3000'
 
   {{ rocketchat_service }}-db:
     container_name: {{ rocketchat_service }}-db
