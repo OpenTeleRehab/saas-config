@@ -1689,14 +1689,14 @@
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
   "smtpServer": {
-    "password": "{{ keycloak_admin_backend_secret_org }}",
+    "password": "{{ smtp_pass_vault }}",
     "starttls": "true",
-    "auth": "false",
-    "port": "1025",
-    "host": "10.10.10.37",
-    "from": "noreply@web-essentials.co",
+    "auth": "true",
+    "port": "587",
+    "host": "email-smtp.us-east-1.amazonaws.com",
+    "from": "noreply@opentelerehab.com",
     "ssl": "false",
-    "user": "noreply@web-essentials.co"
+    "user": "{{ smtp_user_vault }}"
   },
   "loginTheme": "hi",
   "eventsEnabled": false,
