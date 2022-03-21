@@ -5,6 +5,8 @@ org_email:     webessentials@openrehab.com
 org_domain:    webessentials.openrehab.com
 
 my_host: 'production-db.cwgm5sdsswey.ap-southeast-1.rds.amazonaws.com'
+my_user_root:  root
+my_pass_root:  '{{ my_pass_root_vault }}'
 hi_gloabl_host: '192.168.10.26'
 
 gadmin_api_url:     'https://admin.opentelerehab.com'

@@ -8,6 +8,7 @@
    - python3
    - python3-pip
    - pip install docker-compose
+   - pip install pymysql
 
 # Configuration Rocket.Chat
 New version rocket not allow create admin user you need create difference name for administrator account

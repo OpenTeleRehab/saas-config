@@ -8,6 +8,10 @@
 - name: Create organization service
   import_tasks: 1-create-organization.yaml
 
+# Create database
+- name: Create database
+  import_tasks: 2-create-database.yaml
+
 # Laravel Migration
 - name: Run migration
-  import_tasks: 2-migrations.yaml
+  import_tasks: 3-migrations.yaml

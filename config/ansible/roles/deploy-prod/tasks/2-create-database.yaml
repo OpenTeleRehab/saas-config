@@ -1,0 +1,33 @@
+---
+
+---
+
+- name: Create Database
+  mysql_db:
+    name: '{{ item }}'
+    collation: utf8mb4_unicode_ci
+    encoding: utf8mb4
+    login_user: '{{ my_user_root }}'
+    login_password: '{{ mysql_root_password }}'
+    login_host: '{{ my_host }}'
+    state: present
+  loop:
+    - 'admin_{{ org_name }}_service'
+    - 'therapist_{{ org_name }}_service'
+    - 'patient_{{ org_name }}_service'
+
+- name: Allow user Database user
+  mysql_user:
+    name: '{{ item.user }}'
+    host: '%'
+    password: '{{ item.password }}'
+    priv: '{{ item.database }}.*:ALL,GRANT'
+    update_password: on_create
+    login_user: '{{ my_user_root }}'
+    login_password: '{{ mysql_root_password }}'
+    login_host: '{{ my_host }}'
+    state: present
+  loop:
+    - { user: 'admin_{{ org_name }}_service', database: 'admin_{{ org_name }}_service', password: 'admin_{{ org_name }}_service' }
+    - { user: 'therapist_{{ org_name }}_service', database: 'therapist_{{ org_name }}_service', password: 'therapist_{{ org_name }}_service' }
+    - { user: 'patient_{{ org_name }}_service', database: 'patient_{{ org_name }}_service', password: 'patient_{{ org_name }}_service' }

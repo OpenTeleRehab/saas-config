@@ -1,0 +1,69 @@
+---
+
+# Run artisan admin service
+- name: Run artisan migration
+  community.docker.docker_container_exec:
+    container: 'admin-{{ org_name }}-service'
+    command: /bin/bash -c '/usr/bin/php artisan migrate --force'
+
+- name: Run artisan storage link
+  community.docker.docker_container_exec:
+    container: 'admin-{{ org_name }}-service'
+    command: /bin/bash -c '/usr/bin/php artisan storage:link'
+
+- name: Run artisan clear cache
+  community.docker.docker_container_exec:
+    container: 'admin-{{ org_name }}-service'
+    command: /bin/bash -c '/usr/bin/php artisan {{ item }}'
+  loop:
+    - cache:clear
+    - config:clear
+    - view:clear
+    - route:clear
+
+- name: Run artisan import
+  community.docker.docker_container_exec:
+    container: 'admin-{{ org_name }}-service'
+    command: /bin/bash -c '/usr/bin/php artisan hi:import-default-translation'
+
+# Run artisan therapist service
+- name: Run artisan migration
+  community.docker.docker_container_exec:
+    container: 'therapist-{{ org_name }}-service'
+    command: /bin/bash -c '/usr/bin/php artisan migrate --force'
+
+- name: Run artisan storage link
+  community.docker.docker_container_exec:
+    container: 'therapist-{{ org_name }}-service'
+    command: /bin/bash -c '/usr/bin/php artisan storage:link'
+
+- name: Run artisan clear cache
+  community.docker.docker_container_exec:
+    container: 'therapist-{{ org_name }}-service'
+    command: /bin/bash -c '/usr/bin/php artisan {{ item }}'
+  loop:
+    - cache:clear
+    - config:clear
+    - view:clear
+    - route:clear
+
+# Run artisan patient service
+- name: Run artisan migration
+  community.docker.docker_container_exec:
+    container: 'patient-{{ org_name }}-service'
+    command: /bin/bash -c '/usr/bin/php artisan migrate --force'
+
+- name: Run artisan storage link
+  community.docker.docker_container_exec:
+    container: 'patient-{{ org_name }}-service'
+    command: /bin/bash -c '/usr/bin/php artisan storage:link'
+
+- name: Run artisan clear cache
+  community.docker.docker_container_exec:
+    container: 'patient-{{ org_name }}-service'
+    command: /bin/bash -c '/usr/bin/php artisan {{ item }}'
+  loop:
+    - cache:clear
+    - config:clear
+    - view:clear
+    - route:clear
