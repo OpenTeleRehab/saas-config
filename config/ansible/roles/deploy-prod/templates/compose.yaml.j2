@@ -25,6 +25,9 @@ services:
       - {{ org_name }}-network
     volumes:
       - ./config/adminservice/storage:/var/www/storage
+    extra_hosts:
+    - '{{ keycloak_service }}:{{ hi_gloabl_host }}'
+    - '{{ gadmin_service }}:{{ hi_gloabl_host }}'
 
   {{ therapist_service }}:
     container_name: {{ therapist_service }}
@@ -38,6 +41,9 @@ services:
       - ./config/therapistservice/storage:/var/www/storage
     depends_on:
       - {{ admin_service }}
+    extra_hosts:
+    - '{{ keycloak_service }}:{{ hi_gloabl_host }}'
+    - '{{ gadmin_service }}:{{ hi_gloabl_host }}'
 
   {{ patient_service }}:
     container_name: {{ patient_service }}
@@ -51,6 +57,9 @@ services:
       - ./config/patientservice/storage:/var/www/storage
     depends_on:
       - {{ admin_service }}
+    extra_hosts:
+    - '{{ keycloak_service }}:{{ hi_gloabl_host }}'
+    - '{{ gadmin_service }}:{{ hi_gloabl_host }}'
 
   {{ krakend_service }}:
     container_name: {{ krakend_service }}
@@ -80,13 +89,15 @@ services:
       - rocketchat_uploads:/app/uploads
     environment:
       - PORT=3000
-      - ROOT_URL=https://chat.opentelerehab.com
+      - ROOT_URL=https://chat-{{ org_domain }}
       - MONGO_URL=mongodb://{{ rocketchat_service }}-db:27017/rocketchat
       - MONGO_OPLOG_URL=mongodb://{{ rocketchat_service }}-db:27017/local
     depends_on:
       - {{ rocketchat_service }}-db
     labels:
       - 'traefik.enable=true'
+      - 'traefik.http.routers.admin-{{ org_name }}-webapp.tls=true'
+      - 'traefik.http.routers.admin-{{ org_name }}-webapp.tls.certresolver=letsencrypt'
       - 'traefik.http.routers.rocketchat.rule=Host(`chat-{{ org_domain }}`)'
       - 'traefik.http.routers.rocketchat.service=rocketchat'
       - 'traefik.http.services.rocketchat.loadbalancer.server.port=3000'
@@ -137,6 +148,7 @@ services:
       - {{ krakend_service }}
     extra_hosts:
     - '{{ keycloak_service }}:{{ hi_gloabl_host }}'
+    - '{{ gadmin_service }}:{{ hi_gloabl_host }}'
 
   therapist-{{ org_name }}-webapp:
     container_name: therapist-{{ org_name }}-webapp
@@ -156,4 +168,5 @@ services:
       - {{ krakend_service }}
     extra_hosts:
     - '{{ keycloak_service }}:{{ hi_gloabl_host }}'
+    - '{{ gadmin_service }}:{{ hi_gloabl_host }}'
 
