@@ -1,14 +1,12 @@
 ---
 
----
-
 - name: Create Database
   mysql_db:
     name: '{{ item }}'
     collation: utf8mb4_unicode_ci
     encoding: utf8mb4
     login_user: '{{ my_user_root }}'
-    login_password: '{{ mysql_root_password }}'
+    login_password: '{{ my_pass_root }}'
     login_host: '{{ my_host }}'
     state: present
   loop:
@@ -24,7 +22,7 @@
     priv: '{{ item.database }}.*:ALL,GRANT'
     update_password: on_create
     login_user: '{{ my_user_root }}'
-    login_password: '{{ mysql_root_password }}'
+    login_password: '{{ my_pass_root }}'
     login_host: '{{ my_host }}'
     state: present
   loop:

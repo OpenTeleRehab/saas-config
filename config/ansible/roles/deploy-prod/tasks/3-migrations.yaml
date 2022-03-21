@@ -1,17 +1,17 @@
 ---
 
 # Run artisan admin service
-- name: Run artisan migration
+- name: Run artisan migration admin service
   community.docker.docker_container_exec:
     container: 'admin-{{ org_name }}-service'
     command: /bin/bash -c '/usr/bin/php artisan migrate --force'
 
-- name: Run artisan storage link
+- name: Run artisan storage link admin service
   community.docker.docker_container_exec:
     container: 'admin-{{ org_name }}-service'
     command: /bin/bash -c '/usr/bin/php artisan storage:link'
 
-- name: Run artisan clear cache
+- name: Run artisan clear cache admin service
   community.docker.docker_container_exec:
     container: 'admin-{{ org_name }}-service'
     command: /bin/bash -c '/usr/bin/php artisan {{ item }}'
@@ -21,23 +21,23 @@
     - view:clear
     - route:clear
 
-- name: Run artisan import
+- name: Run artisan import admin service
   community.docker.docker_container_exec:
     container: 'admin-{{ org_name }}-service'
     command: /bin/bash -c '/usr/bin/php artisan hi:import-default-translation'
 
 # Run artisan therapist service
-- name: Run artisan migration
+- name: Run artisan migration therapist service
   community.docker.docker_container_exec:
     container: 'therapist-{{ org_name }}-service'
     command: /bin/bash -c '/usr/bin/php artisan migrate --force'
 
-- name: Run artisan storage link
+- name: Run artisan storage link therapist service
   community.docker.docker_container_exec:
     container: 'therapist-{{ org_name }}-service'
     command: /bin/bash -c '/usr/bin/php artisan storage:link'
 
-- name: Run artisan clear cache
+- name: Run artisan clear cache therapist service
   community.docker.docker_container_exec:
     container: 'therapist-{{ org_name }}-service'
     command: /bin/bash -c '/usr/bin/php artisan {{ item }}'
@@ -48,17 +48,17 @@
     - route:clear
 
 # Run artisan patient service
-- name: Run artisan migration
+- name: Run artisan migration patient service
   community.docker.docker_container_exec:
     container: 'patient-{{ org_name }}-service'
     command: /bin/bash -c '/usr/bin/php artisan migrate --force'
 
-- name: Run artisan storage link
+- name: Run artisan storage link patient service
   community.docker.docker_container_exec:
     container: 'patient-{{ org_name }}-service'
     command: /bin/bash -c '/usr/bin/php artisan storage:link'
 
-- name: Run artisan clear cache
+- name: Run artisan clear cache patient service
   community.docker.docker_container_exec:
     container: 'patient-{{ org_name }}-service'
     command: /bin/bash -c '/usr/bin/php artisan {{ item }}'
