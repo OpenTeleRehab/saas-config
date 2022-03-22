@@ -4,7 +4,15 @@
 - name: Run artisan migration admin service
   community.docker.docker_container_exec:
     container: 'admin-{{ org_name }}-service'
-    command: /bin/bash -c '/usr/bin/php artisan migrate --force'
+    command: /bin/bash -c '/usr/bin/php artisan {{ item }}'
+  loop:
+    - migrate --force
+    - hi:create-organization-admin-user {{ org_email }} {{ org_name }}
+    - hi:import-static-page
+    - hi:sync-exercise-data
+    - hi:sync-education-material-data
+    - hi:sync-questionnaire-data
+    - hi:import-system-limit
 
 - name: Run artisan storage link admin service
   community.docker.docker_container_exec:

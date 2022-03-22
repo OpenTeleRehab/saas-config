@@ -27,7 +27,9 @@
     - migrate --force
     - hi:create-organization-admin-user {{ org_email }} {{ org_name }}
     - hi:import-static-page
-    - hi:sync-library-data
+    - hi:sync-exercise-data
+    - hi:sync-education-material-data
+    - hi:sync-questionnaire-data
     - hi:import-system-limit
 
 - name: Deploy therapist service
