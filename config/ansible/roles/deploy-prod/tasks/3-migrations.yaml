@@ -51,7 +51,10 @@
 - name: Run artisan migration patient service
   community.docker.docker_container_exec:
     container: 'patient-{{ org_name }}-service'
-    command: /bin/bash -c '/usr/bin/php artisan migrate --force'
+    command: /bin/bash -c '/usr/bin/php artisan {{ item }}'
+  loop:
+    - migrate --force
+    - passport:install --force
 
 - name: Run artisan storage link patient service
   community.docker.docker_container_exec:
