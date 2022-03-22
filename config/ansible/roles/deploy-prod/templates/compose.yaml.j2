@@ -72,7 +72,7 @@ services:
 
   {{ rocketchat_service }}:
     container_name: {{ rocketchat_service }}
-    image: rocketchat/rocket.chat:4.4.1
+    image: rocketchat/rocket.chat:3.12.0
     restart: unless-stopped
     networks:
       - {{ org_name }}-network
@@ -104,7 +104,7 @@ services:
 
   {{ rocketchat_service }}-db:
     container_name: {{ rocketchat_service }}-db
-    image: mongo:4.0
+    image: mongo:3.6.9
     networks:
       - {{ org_name }}-network
     volumes:
@@ -113,7 +113,7 @@ services:
 
   {{ rocketchat_service }}-db-init-replica:
     container_name: {{ rocketchat_service }}-db-init-replica
-    image: mongo:4.0
+    image: mongo:3.6.9
     networks:
       - {{ org_name }}-network
     command: >
