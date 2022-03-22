@@ -15,10 +15,13 @@ phone_service:      'phone_service'
 
 keycloak_service:   'keycloak'
 
-
 smtp_host:              'email-smtp.us-east-1.amazonaws.com'
 smtp_port:              '587'
 smtp_user:              '{{ smtp_user_vault }}'
 smtp_pass:              '{{ smtp_pass_vault }}'
 smtp_encryption:        'tls'
 smtp_mail_from_address: 'noreply@opentelerehab.com'
+
+sms_sid:                    '{{ sms_sid_vault }}'
+sms_token:                  '{{ sms_token_vault }}'
+sms_verify_service_sid:     '{{ sms_verify_service_sid_vault }}'
