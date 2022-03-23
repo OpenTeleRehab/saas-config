@@ -1,8 +1,9 @@
 ---
 
-org_name:      webessentials
-org_email:     webessentials@openrehab.com
-org_domain:    webessentials.openrehab.com
+org_name:   webessentials
+org_email:  webessentials@opentelerehab.com
+org_domain: webessentials.opentelerehab.com
+jitsi_url:  meet.opentelerehab.com
 
 my_host: 'production-db.cwgm5sdsswey.ap-southeast-1.rds.amazonaws.com'
 my_user_root:  root
