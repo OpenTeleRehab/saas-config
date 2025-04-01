@@ -1,3 +1,9 @@
+## Status: Actively Maintained 🚀
+This project is actively maintained. Contributions, issues, and discussions are welcome!
+
+## License  
+This project is open-source and licensed under the Apache License 2.0. See the [LICENSE](./LICENSE) file for details.
+
 # Prerequisite
 1. Deploy keycloak realm and get authenticate key
 2. Deploy rocketchat and get token
